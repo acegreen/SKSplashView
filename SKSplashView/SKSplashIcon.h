@@ -31,7 +31,8 @@ typedef NS_ENUM(NSInteger, SKIconAnimationType)
 - (instancetype) initWithImage: (UIImage *) iconImage initialSize:(CGSize)initialSize animationType: (SKIconAnimationType) animationType;
 
 
-- (void) setIconAnimationType: (SKIconAnimationType) animationType;
+- (void) setIconAnimationType: (SKIconAnimationType) preAnimationType;
+- (void) setIconAnimationType: (SKIconAnimationType) postAnimationType;
 - (void) setCustomAnimation: (CAAnimation *) animation;
 
 @end

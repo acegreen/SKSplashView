@@ -10,7 +10,8 @@
 
 @interface SKSplashIcon()
 
-@property (nonatomic, assign) SKIconAnimationType animationType;
+@property (nonatomic, assign) SKIconAnimationType preAnimationType;
+@property (nonatomic, assign) SKIconAnimationType postAnimationType;
 @property (strong, nonatomic) CAAnimation *customAnimation;
 @property (nonatomic) CGFloat animationDuration;
 @property (nonatomic) BOOL indefiniteAnimation;
@@ -44,7 +45,7 @@
 {
     self = [super init];
     if(self) {
-        _animationType = animationType;
+        _preAnimationType = animationType;
         _iconImage = iconImage;
         _initialSize = iconImage.size;
         self.image = [iconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -58,12 +59,12 @@
     return self;
 }
 
-- (instancetype) initWithImage:(UIImage *)iconImage initialSize:(CGSize)initialSize animationType:(SKIconAnimationType)animationType
+- (instancetype) initWithImage:(UIImage *)iconImage initialSize:(CGSize)initialSize preAnimationType:(SKIconAnimationType)preAnimationType postAnimationType:(SKIconAnimationType)postAnimationType
 {
     self = [super init];
     if(self)
     {
-        _animationType = animationType;
+        _preAnimationType = preAnimationType;
         _iconImage = iconImage;
         _initialSize = initialSize;
         self.image = [iconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -79,7 +80,7 @@
 
 - (void) setIconAnimationType:(SKIconAnimationType)animationType
 {
-    _animationType = animationType;
+    _preAnimationType = animationType;
 }
 
 - (void) setCustomAnimation:(CAAnimation *)animation
@@ -128,7 +129,7 @@
 
 - (void) startAnimation
 {
-    switch (_animationType)
+    switch (_preAnimationType || _postAnimationType)
     {
         case SKIconAnimationTypeBounce:
             [self addBounceAnimation];

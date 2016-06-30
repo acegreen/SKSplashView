@@ -14,6 +14,7 @@
 @property (nonatomic, assign) SKSplashAnimationType animationType;
 @property (nonatomic, assign) SKSplashIcon *splashIcon;
 @property (strong, nonatomic) CAAnimation *customAnimation;
+@property (strong, nonatomic) NSOperationQueue *queue;
 
 @end
 
@@ -177,7 +178,18 @@
 
 - (void) startAnimationWhenFinished:(NSOperationQueue *)queue
 {
-    [queue addObserver:self forKeyPath:@"operations" options:0 context:NULL];
+    self.queue = queue;
+    [self.queue addObserver:self forKeyPath:@"operationCount" options:0 context:NULL];
+
+    // Stat animation when queue has completed
+    if(_splashIcon) { //trigger splash icon animation
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"startAnimation" object:self userInfo:nil];
+    }
+    
+    if([self.delegate respondsToSelector:@selector(splashView:didBeginAnimatingWithDuration:)])
+    {
+        [self.delegate splashView:self didBeginAnimatingWithDuration:self.animationDuration];
+    }
 }
 
 - (void) setCustomAnimationType:(CAAnimation *)animation
@@ -315,24 +327,20 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                          change:(NSDictionary *)change context:(void *)context
 {
-    if ([object isKindOfClass:[NSOperationQueue class]] && [keyPath isEqualToString:@"operationCount"]) {
-        NSOperationQueue *queue = object;
-        if (queue.operationCount == 0) {
-            // Stat animation when queue has completed
-            if(_splashIcon) { //trigger splash icon animation
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"startAnimation" object:self userInfo:nil];
-            }
+    if (object == self.queue && [keyPath isEqualToString:@"operationCount"]) {
+        if (self.queue.operationCount == 0) {
+            [self removeSplashView];
             
-            if([self.delegate respondsToSelector:@selector(splashView:didBeginAnimatingWithDuration:)])
-            {
-                [self.delegate splashView:self didBeginAnimatingWithDuration:self.animationDuration];
-            }
         }
     }
     else {
         [super observeValueForKeyPath:keyPath ofObject:object
                                change:change context:context];
     }
+}
+
+- (void) dealloc {
+    [self.queue removeObserver:self forKeyPath:@"operationCount"];
 }
 
 @end
