@@ -248,7 +248,6 @@
 {
     [self.layer removeAllAnimations];
     self.indefiniteAnimation = NO;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeFromSuperview];
 }
 

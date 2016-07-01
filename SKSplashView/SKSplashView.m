@@ -149,14 +149,6 @@
         default:NSLog(@"No animation type selected");
             break;
     }
-    
-//    [[NSNotificationCenter defaultCenter] addObserverForName:@"stopAnimation" object:self queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-//    {
-//        if(completionHandler) {
-//            completionHandler();
-//        }
-//        [[NSNotificationCenter defaultCenter] removeObserver:self];
-//    }];
 }
 
 - (void) startAnimationWhileExecuting:(NSURLRequest *)request withCompletion:(void (^)(NSData *, NSURLResponse *, NSError *))completion
@@ -190,13 +182,6 @@
     {
         [self.delegate splashView:self didBeginAnimatingWithDuration:self.animationDuration];
     }
-    
-    [self.queue waitUntilAllOperationsAreFinished];
-    
-    if(_splashIcon) { //trigger splash icon animation
-        [_splashIcon startAnimationWithDuration:_splashIcon.postAnimationType:self.animationDuration];
-    }
-    [self removeSplashView];
 }
 
 - (void) setCustomAnimationType:(CAAnimation *)animation
