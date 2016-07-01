@@ -10,8 +10,8 @@
 
 @interface SKSplashIcon()
 
-@property (nonatomic, assign) SKIconAnimationType preAnimationType;
-@property (nonatomic, assign) SKIconAnimationType postAnimationType;
+@property (readwrite, assign) SKIconAnimationType preAnimationType;
+@property (readwrite, assign) SKIconAnimationType postAnimationType;
 @property (strong, nonatomic) CAAnimation *customAnimation;
 @property (nonatomic) CGFloat animationDuration;
 @property (nonatomic) BOOL indefiniteAnimation;
@@ -35,7 +35,6 @@
         self.tintColor = _iconColor;
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.frame = CGRectMake(0, 0, iconImage.size.width, iconImage.size.height);
-        [self addObserverForAnimationNotification];
     }
     
     return self;
@@ -53,7 +52,6 @@
         self.tintColor = _iconColor;
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.frame = CGRectMake(0, 0, iconImage.size.width, iconImage.size.height);
-        [self addObserverForAnimationNotification];
     }
     
     return self;
@@ -72,7 +70,6 @@
         self.tintColor = _iconColor;
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.frame =  CGRectMake(0, 0, _initialSize.width, _initialSize.height);
-        [self addObserverForAnimationNotification];
     }
     
     return self;
@@ -81,6 +78,11 @@
 - (void) setIconAnimationType:(SKIconAnimationType)animationType
 {
     _preAnimationType = animationType;
+}
+
+- (void) setPostIconAnimationType:(SKIconAnimationType)animationType
+{
+    _postAnimationType = animationType;
 }
 
 - (void) setCustomAnimation:(CAAnimation *)animation
@@ -103,33 +105,16 @@
 
 #pragma mark - Implementation
 
-- (void) addObserverForAnimationNotification
+- (void) startAnimation:(SKIconAnimationType)animationType;
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"startAnimation" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"stopAnimation" object:nil];
+    [self startAnimationWithDuration:animationType :0];
 }
 
-- (void) receiveNotification: (NSNotification *) notification
-{
-    if([notification.name isEqualToString:@"startAnimation"]) { //if start animation, set duration if any
-        if(notification.userInfo [@"animationDuration"]){
-            double duration = [notification.userInfo [@"animationDuration"] doubleValue];
-            self.animationDuration = duration;
-            [NSTimer scheduledTimerWithTimeInterval:self.animationDuration target:self selector:@selector(removeAnimations) userInfo:nil repeats:YES];
-        }
-        else {
-            self.indefiniteAnimation = YES;
-        }
-        [self startAnimation];
-    }
-    else if([notification.name isEqualToString:@"stopAnimation"]) {
-        [self removeAnimations];
-    }
-}
 
-- (void) startAnimation
+- (void) startAnimationWithDuration:(SKIconAnimationType)animationType:(CGFloat)animationDuration
 {
-    switch (_preAnimationType || _postAnimationType)
+    
+    switch (animationType)
     {
         case SKIconAnimationTypeBounce:
             [self addBounceAnimation];
@@ -157,6 +142,13 @@
             break;
         default:NSLog(@"No animation type selected");
             break;
+    }
+    
+    if(animationDuration != 0) { //if start animation, set duration if any
+        self.animationDuration = animationDuration;
+        [NSTimer scheduledTimerWithTimeInterval:self.animationDuration target:self selector:@selector(removeAnimations) userInfo:nil repeats:YES];
+    } else {
+        self.indefiniteAnimation = YES;
     }
 }
 
