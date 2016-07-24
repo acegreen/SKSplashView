@@ -117,8 +117,9 @@
 - (void)startAnimationWithCompletion:(void(^)())completionHandler
 {
     if(_splashIcon) {
-        NSDictionary *dic = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%f",self.animationDuration] forKey:@"animationDuration"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"startAnimation" object:self userInfo:dic];
+        _splashIcon.animationDuration = self.animationDuration;
+        _splashIcon.delegate = self;
+        _splashIcon.startAnimating;
     }
     
     if([self.delegate respondsToSelector:@selector(splashView:didBeginAnimatingWithDuration:)]) {
@@ -148,20 +149,14 @@
         default:NSLog(@"No animation type selected");
             break;
     }
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:@"stopAnimation" object:self queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *notif)
-    {
-        if(completionHandler) {
-            completionHandler();
-        }
-        [[NSNotificationCenter defaultCenter] removeObserver:self];
-    }];
 }
 
 - (void) startAnimationWhileExecuting:(NSURLRequest *)request withCompletion:(void (^)(NSData *, NSURLResponse *, NSError *))completion
 {
-    if(_splashIcon) { //trigger splash icon animation
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"startAnimation" object:self userInfo:nil];
+    if(_splashIcon) {
+        _splashIcon.animationDuration = self.animationDuration;
+        _splashIcon.delegate = self;
+        _splashIcon.startAnimating;
     }
     
     if([self.delegate respondsToSelector:@selector(splashView:didBeginAnimatingWithDuration:)]) {
@@ -301,10 +296,17 @@
 - (void) removeSplashView
 {
     [self removeFromSuperview];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"stopAnimation" object:self userInfo:nil];
     if([self.delegate respondsToSelector:@selector(splashViewDidEndAnimating:)]) {
         [self.delegate splashViewDidEndAnimating:self];
     }
+}
+
+- (void) splashIcon: (SKSplashIcon *) splashIcon didBeginAnimatingWithDuration: (float) duration {
+    
+}
+
+- (void) splashIconDidEndAnimating: (SKSplashIcon *) splashIcon {
+    // trigger callback from startAnimation
 }
 
 @end

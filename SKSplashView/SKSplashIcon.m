@@ -34,7 +34,6 @@
         self.tintColor = _iconColor;
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.frame = CGRectMake(0, 0, iconImage.size.width, iconImage.size.height);
-        [self addObserverForAnimationNotification];
     }
     
     return self;
@@ -52,7 +51,6 @@
         self.tintColor = _iconColor;
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.frame = CGRectMake(0, 0, iconImage.size.width, iconImage.size.height);
-        [self addObserverForAnimationNotification];
     }
     
     return self;
@@ -71,7 +69,6 @@
         self.tintColor = _iconColor;
         self.contentMode = UIViewContentModeScaleAspectFit;
         self.frame =  CGRectMake(0, 0, _initialSize.width, _initialSize.height);
-        [self addObserverForAnimationNotification];
     }
     
     return self;
@@ -101,12 +98,6 @@
 }
 
 #pragma mark - Implementation
-
-- (void) addObserverForAnimationNotification
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"startAnimation" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"stopAnimation" object:nil];
-}
 
 - (void) receiveNotification: (NSNotification *) notification
 {
@@ -255,7 +246,6 @@
 {
     [self.layer removeAllAnimations];
     self.indefiniteAnimation = NO;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeFromSuperview];
 }
 

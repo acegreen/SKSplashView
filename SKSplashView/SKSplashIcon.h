@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "SKSplashView.h"
 
+@protocol SKSplashIconDelegate <NSObject>
+@optional
+- (void) splashIcon: (SKSplashIcon *) splashIcon didBeginAnimatingWithDuration: (float) duration;
+- (void) splashIconDidEndAnimating: (SKSplashIcon *) splashIcon;
+@end
+
 typedef NS_ENUM(NSInteger, SKIconAnimationType)
 {
     SKIconAnimationTypeBounce,
@@ -25,6 +31,8 @@ typedef NS_ENUM(NSInteger, SKIconAnimationType)
 
 @property (strong, nonatomic) UIColor *iconColor; //Default: white
 @property (nonatomic, assign) CGSize iconSize;
+
+@property (weak, nonatomic) id <SKSplashIconDelegate> delegate;
 
 - (instancetype) initWithImage: (UIImage *) iconImage;
 - (instancetype) initWithImage: (UIImage *) iconImage animationType: (SKIconAnimationType) animationType;
